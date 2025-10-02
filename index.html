@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estudo ELBARI: Indicadores de Estilo de Vida e Saúde em Pacientes Bariátricos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Slab:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* Paleta baseada na logo */
+        :root{
+          --elbari-primary:#007e9c;      /* principal */
+          --elbari-primary-dark:#00667d; /* hover/ativo escuro */
+          --elbari-primary-50:#e0f7fa;   /* fundo claro */
+          --elbari-primary-100:#b2ebf2;  /* borda clara */
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f9fa; /* fundo que combina com a logo */
+            color: #1e293b; /* slate-800 */
+        }
+        h1, h2, h3 {
+            font-family: 'Roboto Slab', serif;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px; 
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .nav-link {
+            transition: color 0.3s, border-bottom-color 0.3s;
+        }
+        .nav-link.active {
+            color: var(--elbari-primary);
+            border-bottom-color: var(--elbari-primary);
+        }
+        .tab-button.active {
+            background-color: var(--elbari-primary);
+            color: white;
+        }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        .accordion-button.open + .accordion-content {
+            max-height: 1000px; /* Adjust as needed */
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-slate-200/80 backdrop-blur-lg shadow-md sticky top-0 z-50">
+        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+               <div class="flex items-center">
+                    <img src="logo2.png" alt="ELBARI" class="h-28 w-auto"> 
+               </div>
+
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#visao-geral" class="nav-link text-slate-700 hover:text-[var(--elbari-primary-dark)] px-3 py-2 rounded-md text-sm font-medium border-b-2 border-transparent">Visão Geral</a>
+                        <a href="#metodologia" class="nav-link text-slate-700 hover:text-[var(--elbari-primary-dark)] px-3 py-2 rounded-md text-sm font-medium border-b-2 border-transparent">Metodologia</a>
+                        <a href="#coleta-analise" class="nav-link text-slate-700 hover:text-[var(--elbari-primary-dark)] px-3 py-2 rounded-md text-sm font-medium border-b-2 border-transparent">Coleta e Análise</a>
+                        <a href="#etica-resultados" class="nav-link text-slate-700 hover:text-[var(--elbari-primary-dark)] px-3 py-2 rounded-md text-sm font-medium border-b-2 border-transparent">Ética e Resultados</a>
+                        <a href="#pesquisadores" class="nav-link text-slate-700 hover:text-[var(--elbari-primary-dark)] px-3 py-2 rounded-md text-sm font-medium border-b-2 border-transparent">Pesquisadores</a>
+                    </div>
+                </div>
+                <div class="md:hidden">
+                    <button id="mobile-menu-button" class="text-slate-700 hover:text-[var(--elbari-primary-dark)] focus:outline-none">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                    </button>
+                </div>
+            </div>
+        </nav>
+        <div id="mobile-menu" class="md:hidden hidden bg-slate-200/90 py-2">
+            <a href="#visao-geral" class="block nav-link text-slate-700 hover:text-[var(--elbari-primary-dark)] px-3 py-2 rounded-md text-base font-medium border-b-2 border-transparent">Visão Geral</a>
+            <a href="#metodologia" class="block nav-link text-slate-700 hover:text-[var(--elbari-primary-dark)] px-3 py-2 rounded-md text-base font-medium border-b-2 border-transparent">Metodologia</a>
+            <a href="#coleta-analise" class="block nav-link text-slate-700 hover:text-[var(--elbari-primary-dark)] px-3 py-2 rounded-md text-base font-medium border-b-2 border-transparent">Coleta e Análise</a>
+            <a href="#etica-resultados" class="block nav-link text-slate-700 hover:text-[var(--elbari-primary-dark)] px-3 py-2 rounded-md text-base font-medium border-b-2 border-transparent">Ética e Resultados</a>
+            <a href="#pesquisadores" class="block nav-link text-slate-700 hover:text-[var(--elbari-primary-dark)] px-3 py-2 rounded-md text-base font-medium border-b-2 border-transparent">Pesquisadores</a>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+      <section id="visao-geral" class="pt-8 pb-4 scroll-mt-16">
+        <div class="text-center mb-0">
+            <h1>
+                <img src="logo.png" alt="Estudo ELBARI" class="mx-auto h-56 md:h-72 w-auto">
+            </h1>
+        </div>
+
+        <div class="bg-white p-8 rounded-xl shadow-lg mb-12 -mt-1">
+            <h2 class="text-2xl font-semibold text-[var(--elbari-primary)] mb-4">Introdução ao Estudo</h2>
+            <p class="text-slate-700 leading-relaxed">
+                A obesidade é um problema de saúde pública global com impactos significativos na qualidade de vida. No Brasil, a prevalência de obesidade em adultos é de 24,3%. A cirurgia bariátrica surge como alternativa eficaz para a obesidade severa, sendo os tipos mais comuns a gastrectomia vertical e o bypass gástrico. Este estudo visa monitorar indicadores de saúde e estilo de vida e sua relação com o peso corporal em pacientes bariátricos por três anos.
+            </p>
+            <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-[var(--elbari-primary-50)] p-4 rounded-lg border border-[var(--elbari-primary-100)]">
+                    <h3 class="font-semibold text-[var(--elbari-primary-dark)]">Estimativa Global de Obesidade (2030)</h3>
+                    <p class="text-2xl font-bold text-[var(--elbari-primary)]">~1 Bilhão de Pessoas</p>
+                    <p class="text-sm text-slate-500">(1 em 5 mulheres, 1 em 7 homens) </p>
+                </div>
+                <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                    <h3 class="font-semibold text-slate-800">Cirurgias Bariátricas no Brasil (2022)</h3>
+                    <p class="text-2xl font-bold text-slate-700">74.696 Procedimentos</p>
+                    <p class="text-sm text-slate-500">(SUS, planos de saúde, clínicas particulares) </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-8 mb-12">
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <h3 class="text-xl font-semibold text-slate-800 mb-3">Objetivo </h3>
+                <p class="text-slate-600">Monitorar os indicadores de saúde e estilo de vida e sua relação com o peso corporal em pacientes bariátricos em um período de três anos.</p>
+            </div>
+            
+            
+      </section>
+
+      <hr class="my-16 border-slate-300">
+
+      <section id="metodologia" class="py-16 scroll-mt-16">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">Metodologia da Pesquisa</h2>
+            <p class="mt-4 text-lg text-slate-600 max-w-3xl mx-auto">Esta seção detalha o desenho do estudo, a população alvo, os instrumentos de coleta de dados e as variáveis investigadas. </p>
+        </div>
+
+        <div class="mb-8">
+            <div class="flex flex-wrap justify-center gap-2 mb-6">
+                <button class="tab-button bg-white text-[var(--elbari-primary)] px-4 py-2 rounded-md shadow hover:bg-[var(--elbari-primary)] hover:text-white transition active" data-tab="desenho">Desenho e Local</button>
+                <button class="tab-button bg-white text-[var(--elbari-primary)] px-4 py-2 rounded-md shadow hover:bg-[var(--elbari-primary)] hover:text-white transition" data-tab="populacao">População e Critérios</button>
+                <button class="tab-button bg-white text-[var(--elbari-primary)] px-4 py-2 rounded-md shadow hover:bg-[var(--elbari-primary)] hover:text-white transition" data-tab="instrumentos">Instrumentos</button>
+            </div>
+
+            <div id="tab-content-desenho" class="tab-content-panel bg-white p-6 rounded-xl shadow-lg">
+                <h3 class="text-xl font-semibold text-slate-800 mb-4">Desenho, Local e Período do Estudo</h3>
+                <p class="text-slate-700 mb-2"><strong>Delineamento:</strong> Estudo observacional longitudinal.</p>
+                <p class="text-slate-700 mb-2"><strong>Local:</strong> Pacientes do Hospital Universitário Polydoro Ernani de São Thiago (HU-UFSC/EBSERH), referência em cirurgia bariátrica via SUS. Avaliações físicas também no Centro de Desportos da UFSC (CDS/UFSC).</p>
+                <p class="text-slate-700"><strong>Período:</strong> Recrutamento de julho de 2022 a dezembro de 2026. Acompanhamento por até 3 anos, com conclusão prevista para dezembro de 2029.</p>
+            </div>
+
+            <div id="tab-content-populacao" class="tab-content-panel bg-white p-6 rounded-xl shadow-lg hidden">
+                <h3 class="text-xl font-semibold text-slate-800 mb-4">População Alvo e Critérios de Elegibilidade</h3>
+                <p class="text-slate-700 mb-2"><strong>População Alvo:</strong> Pacientes adultos em atendimento para cirurgia bariátrica no HU-UFSC/EBSERH de julho de 2022 a dezembro de 2026. Inclui pacientes já operados desde julho de 2022 e os que ainda serão submetidos à cirurgia.</p>
+                <div class="grid md:grid-cols-2 gap-4 mt-4">
+                    <div>
+                        <h4 class="font-semibold text-green-700">Critérios de Inclusão:</h4>
+                        <ul class="list-disc list-inside text-slate-600 text-sm">
+                            <li>Idade: >18 anos.</li>
+                            <li>Submetidos à cirurgia bariátrica (jul/2022 - dez/2026).</li>
+                            <li>Na lista de espera pré-prontos para cirurgia.</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-red-700">Critérios de Exclusão:</h4>
+                        <ul class="list-disc list-inside text-slate-600 text-sm">
+                            <li>Gestantes ou lactantes.</li>
+                            <li>Restrições que impeçam responder questionários por conta própria.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="tab-content-instrumentos" class="tab-content-panel bg-white p-6 rounded-xl shadow-lg hidden">
+                <h3 class="text-xl font-semibold text-slate-800 mb-4">Instrumentos de Coleta de Dados </h3>
+                <ul class="list-disc list-inside text-slate-700 space-y-2">
+                    <li><strong>Avaliação clínica e laboratorial:</strong> Exames bioquímicos e antropométricos. Coleta de histórico médico, uso de medicamentos, estado clínico, coleta sanguínea, avaliação da composição corporal (DXA e bioimpedância), perimetria.</li>
+                    <li><strong>Avaliações físicas:</strong> Realizadas no CDS/UFSC. Inclui sinais vitais, força muscular (dinamometria), teste de levantar da cadeira, teste de sentar e levantar 5 vezes, caminhada de 6 minutos, teste de sentar e alcançar, TUG. Duração estimada: 50 min a 1 hora.</li>
+                    <li><strong>Questionários padronizados:</strong> Administrados presencialmente ou online (Zoho Survey). Investigam variáveis sociodemográficas, autoavaliação de saúde, qualidade de vida, sono, atividade física, comportamento sedentário, estágios de mudança, barreiras e motivos para exercício, autoimagem, comportamento alimentar, ansiedade e depressão. Duração estimada: 40 min a 1 hora.</li>
+                    <li><strong>Entrevista semiestruturada:</strong> Presencial ou online (Google Meeting). Aborda estigma do peso, saúde mental, imagem corporal, autoestima e questões da cirurgia.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div>
+            <h3 class="text-2xl font-semibold text-slate-800 mb-6 text-center">Variáveis do Estudo</h3>
+            <div class="space-y-4">
+                <div class="bg-white rounded-lg shadow">
+                    <button class="accordion-button w-full text-left p-4 font-medium text-[var(--elbari-primary)] hover:bg-[var(--elbari-primary-50)] transition flex justify-between items-center">
+                        Desfecho Primário
+                        <span class="transform transition-transform duration-300">▼</span>
+                    </button>
+                    <div class="accordion-content px-4 pb-4 text-slate-600">
+                        <p>Perda de peso após a cirurgia bariátrica.</p>
+                        <p><strong>Métricas:</strong> %EWL (perda do excesso de peso), %TWL (perda total de peso), redução de pontos do IMC.</p>
+                        <p><strong>Mensuração:</strong> Balança de bioimpedância Omron HBF-514 (0-150kg, incrementos 0,1kg). Avalia % gordura corporal, massa muscular, IMC, gordura visceral, taxa metabólica basal.</p>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow">
+                    <button class="accordion-button w-full text-left p-4 font-medium text-[var(--elbari-primary)] hover:bg-[var(--elbari-primary-50)] transition flex justify-between items-center">
+                        Desfechos Secundários
+                        <span class="transform transition-transform duration-300">▼</span>
+                    </button>
+                    <div class="accordion-content px-4 pb-4 text-slate-600 space-y-3">
+                        <p><strong>Qualidade de Vida Relacionada à Saúde:</strong> IWQOL-Lite (31 itens, 5 escalas: função física, autoestima, vida sexual, angústia pública/interação social, trabalho). Escala Likert 5 pontos, escores normatizados 0-100 (100 = melhor QV).</p>
+                        <p><strong>Autoimagem Corporal:</strong> BODY-Q (escalas independentes). Usará 2 escalas: Sofrimento psicossocial relacionado à aparência (8 itens) e Autoimagem (7 itens). Likert 4 pontos, escores convertidos para 0-100.</p>
+                        <p><strong>Atividade Física:</strong> GPAQ (OMS) - 16 perguntas sobre 3 domínios (trabalho, deslocamento, lazer) e comportamento sedentário. Classificação: inativo, insuficientemente ativo, fisicamente ativo.</p>
+                        <p><strong>Aptidão Física Relacionada à Saúde:</strong> Testes de força, mobilidade, aptidão cardiorrespiratória (dinamometria manual, levantar da cadeira, sentar e levantar 5x, caminhada 6 min, sentar e alcançar, TUG).</p>
+                        <p><strong>Medidas Antropométricas:</strong> Circunferência da cintura, quadril e abdômen. Fita antropométrica Sanny (0-2m, sensibilidade 1mm).</p>
+                        <p><strong>Índice de Massa Corporal (IMC):</strong> Peso (kg) / altura (m²). Altura com estadiômetro Sanny (115-210cm, precisão mm). Peso com balança Inbody 720.</p>
+                        <p><strong>Composição Corporal:</strong> Bioimpedância (Inbody 720) e DEXA (GE Healthcare Lunar iDXA).</p>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow">
+                    <button class="accordion-button w-full text-left p-4 font-medium text-[var(--elbari-primary)] hover:bg-[var(--elbari-primary-50)] transition flex justify-between items-center">
+                        Variáveis de Exposição
+                        <span class="transform transition-transform duration-300">▼</span>
+                    </button>
+                    <div class="accordion-content px-4 pb-4 text-slate-600 space-y-3">
+                        <p><strong>Sociodemográficas:</strong> Sexo, idade, cor da pele, estado civil, filhos, escolaridade, renda familiar.</p>
+                        <p><strong>Estágios de Mudança (Exercício):</strong> Escala baseada no Modelo Transteórico (Pré-contemplação, Contemplação, Preparação, Ação, Manutenção).</p>
+                        <p><strong>Qualidade do Sono:</strong> PSQI (Índice de Qualidade do Sono de Pittsburgh) - 9 questões, 7 componentes, escore 0-21 (maior = pior).</p>
+                        <p><strong>Comportamento Sedentário:</strong> Questionário de Mielke et al. (2020) - tempo gasto em 5 contextos (TV, computador em casa, sentado no trabalho, sentado na escola/universidade, transporte).</p>
+                        <p><strong>Comportamento Alimentar:</strong> TFEQ-R21 (Three Factor Eating Questionnaire) - 21 itens, 3 dimensões (restrição cognitiva, desinibição, fome emocional). Escores 0-100.</p>
+                        <p><strong>Sintomas de Ansiedade:</strong> GAD-7 (Generalized Anxiety Disorder-7) - 7 questões, Likert 4 pontos, escore 0-21 (leve, moderada, grave).</p>
+                        <p><strong>Sintomas Depressivos:</strong> PHQ-9 (Patient Health Questionnaire-9) - 9 questões, Likert 4 pontos, escore 0-27 (ausência/leve, moderada, grave).</p>
+                        <p><strong>Registro do Prontuário:</strong> Histórico clínico, tipo de cirurgia, diagnósticos, medicamentos, exames bioquímicos.</p>
+                        <p><strong>Exames Bioquímicos:</strong> Perfil lipídico, função hepática, renal, inflamatória.</p>
+                        <p><strong>Autoavaliação de Saúde:</strong> Pergunta única ("Como classificaria sua saúde geral?") com categorias (Muito boa, Boa, Regular, Ruim, Muito ruim).</p>
+                        <p><strong>Morbidade Autorreferida:</strong> Diagnóstico médico de doenças crônicas (Diabetes, hipertensão, dislipidemia, etc.).</p>
+                        <p><strong>Barreiras para Atividade Física:</strong> Questionário de Martins e Petroski (2000) - 19 barreiras, Likert 5 pontos, escore 0-76.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+      </section>
+
+      <hr class="my-16 border-slate-300">
+
+      <section id="coleta-analise" class="py-16 scroll-mt-16">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">Coleta e Análise de Dados</h2>
+            <p class="mt-4 text-lg text-slate-600 max-w-3xl mx-auto">Esta seção descreve os procedimentos para recrutamento de participantes, coleta de informações e os métodos estatísticos que serão utilizados para analisar os dados.</p>
+        </div>
+        <div class="grid md:grid-cols-2 gap-8">
+            <div class="bg-white p-6 rounded-xl shadow-lg">
+                <h3 class="text-xl font-semibold text-slate-800 mb-4">Procedimentos e Logística</h3>
+                <ul class="space-y-2 text-slate-700 text-sm">
+                    <li><strong>Aprovações Éticas:</strong> Coleta após aprovação do setor de pesquisa do HU-UFSC/EBSERH e CEPSH-UFSC.</li>
+                    <li><strong>Recrutamento:</strong> Pacientes da lista de espera e já operados (desde julho/2022) equipe.</li>
+                    <li><strong>Consentimento:</strong> TCLE entregue presencialmente ou via digital (PDF por e-mail/WhatsApp). Confirmação por assinatura física, digital ou mensagem/áudio.</li>
+                    <li><strong>Agendamento:</strong> Coleta de dados, entrevistas e avaliação física agendadas conforme conveniência.</li>
+                    <li><strong>Equipe:</strong> Professores do PPGEF/UFSC (Dr. Giovani Firpo Del Duca, Dr. Jucemar Benedet), chefe da residência em cirurgia do aparelho digestivo do HU (Dr. Tiago Rafael Onzi) e seis estudantes de pós-graduação.</li>
+                    <li><strong>Locais de Coleta:</strong> Questionários e entrevistas no HU ou sala no CDS/UFSC. Questionário também online (Zoho Survey). Avaliações físicas também nas quadras do CDS/UFSC. Entrevistas também via Google Meeting.</li>
+                    <li><strong>Frequência das Coletas:</strong> Pré-operatório (1 coleta). Pós-operatório: 30 dias, 90 dias, 6 meses, 1 ano, 2 anos, 3 anos. Pacientes já operados desde julho/2022: uma única coleta.</li>
+                    <li><strong>Tamanho do Estudo:</strong> Formato de censo, todos os elegíveis que consentirem. Sem cálculo amostral prévio.</li>
+                </ul>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-lg">
+                <h3 class="text-xl font-semibold text-slate-800 mb-4">Análise dos Dados</h3>
+                <ul class="space-y-2 text-slate-700 text-sm">
+                    <li><strong>Estatística Descritiva:</strong> Frequências (n, %), IC95%. Variáveis contínuas normais: média e DP; não normais: mediana e intervalo interquartílico.</li>
+                    <li><strong>Estatística Inferencial:</strong> Correlação de Spearman (não normal) e Pearson (normal). Regressão logística para fatores associados. Resultados como Odds Ratio (OR), IC95%, valores de p. Coeficientes padronizados e erros padrão. Análise bruta e ajustada (modelo hierárquico com backward selection).</li>
+                    <li><strong>Comparações:</strong> Teste t para amostras dependentes (antes/depois da cirurgia). Razão de Incidência Cumulativa (RIC) para risco de eventos.</li>
+                    <li><strong>Dados Longitudinais:</strong> Modelos de Efeitos Mistos (LMM) para evolução das variáveis. Modelos Generalizados de Efeitos Mistos (GLMM) para variáveis categóricas/não normais. Análise de painel cruzado para variações ao longo do tempo.</li>
+                    <li><strong>Software:</strong> SPSS versão 30.0, IC95%, p < 0,05.</li>
+                    <li><strong>Análise Qualitativa (Entrevistas):</strong> Análise de conteúdo (textual indutiva/dedutiva) com auxílio de softwares (NVivo, ATLAS.ti, IRaMuTeQ ou Word). Entrevistas gravadas e transcritas.</li>
+                </ul>
+            </div>
+        </div>
+      </section>
+        
+      <hr class="my-16 border-slate-300">
+
+      <section id="etica-resultados" class="py-16 scroll-mt-16">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">Aspectos Éticos e Resultados Esperados</h2>
+            <p class="mt-4 text-lg text-slate-600 max-w-3xl mx-auto">A condução ética da pesquisa é primordial, assim como a antecipação dos impactos e contribuições científicas do estudo ELBARI.</p>
+        </div>
+        <div class="grid md:grid-cols-2 gap-8">
+            <div class="bg-white p-6 rounded-xl shadow-lg">
+                <h3 class="text-xl font-semibold text-slate-800 mb-4">Aspectos Éticos</h3>
+                <ul class="space-y-2 text-slate-700 text-sm">
+                    <li><strong>Confidencialidade:</strong> Identidade preservada (LGPD, Lei 13.709/2018).</li>
+                    <li><strong>Consentimento Informado:</strong> Participantes informados sobre objetivos, procedimentos, riscos, benefícios. Participação voluntária, interrupção a qualquer momento sem prejuízo. TCLE assinado (Apêndice 1).</li>
+                    <li><strong>Segurança de Dados Online:</strong> Uso de plataformas confiáveis (Zoho Survey) para questionários online, com download imediato e exclusão de dados das plataformas após coleta para garantir confidencialidade.</li>
+                    <li><strong>Riscos e Minimização:</strong> Pequenos riscos de constrangimento, desconforto emocional ao recordar, cansaço pelo questionário. Avaliações físicas podem causar desconforto temporário (fadiga, dor muscular, etc.), especialmente com condições pré-existentes. Monitoramento contínuo, interrupção imediata se houver risco. Suporte e encaminhamento psicológico se necessário.</li>
+                    <li><strong>Benefícios aos Participantes:</strong> Materiais educativos sobre estilo de vida saudável. Orientações para perda/manutenção de peso. Resultados individuais confidenciais das avaliações físicas com recomendações personalizadas.</li>
+                    <li><strong>Custos e Ressarcimento:</strong> Sem custos para o participante. Despesas de participação (transporte, alimentação) ressarcidas. Indenização por danos comprovadamente decorrentes da pesquisa.</li>
+                    <li><strong>Supervisão Ética:</strong> Contato com CEPSH-UFSC se necessário. Projeto em submissão ao CEPSH, execução após aprovação (Res. 466/2012 e 510/16 CNS).</li>
+                </ul>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-lg">
+                <h3 class="text-xl font-semibold text-slate-800 mb-4">Resultados Esperados</h3>
+                 <ul class="space-y-2 text-slate-700 text-sm">
+                    <li>Melhorias significativas em saúde e estilo de vida nos primeiros meses pós-cirurgia, com possível estabilização/regressão em 3 anos.</li>
+                    <li>Redução de doenças crônicas (hipertensão, diabetes tipo 2), melhora em indicadores sanguíneos, redução de sintomas depressivos/ansiosos no primeiro ano, com possível estabilização/piora a longo prazo.</li>
+                    <li>Mudanças positivas em estilo de vida associadas a melhores desfechos de saúde e manutenção/prevenção de recidiva de peso em 3 anos.</li>
+                    <li>Pacientes sem mudança ou manutenção de hábitos saudáveis terão maior risco de recidiva de peso e comorbidades.</li>
+                    <li><strong>Produtos Acadêmicos:</strong> Relatório final, dissertações de mestrado, resumos para eventos, artigos científicos.</li>
+                </ul>
+            </div>
+        </div>
+      </section>
+        
+      <hr class="my-16 border-slate-300">
+
+      <section id="pesquisadores" class="py-16 scroll-mt-16">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">Pesquisadores e Contato</h2>
+            <p class="mt-4 text-lg text-slate-600 max-w-3xl mx-auto">Conheça a equipe responsável pelo Estudo ELBARI.</p>
+        </div>
+        <div class="bg-white p-8 rounded-xl shadow-lg">
+            <h3 class="text-xl font-semibold text-slate-800 mb-2">Equipe de Pesquisadores:</h3>
+            <ul class="list-disc list-inside text-slate-700 mb-6 space-y-1 text-sm">
+                <li>Giovani Firpo Del Duca</li>
+                <li>Jucemar Benedet</li>
+                <li>Edú Fiorin Schopf</li>
+                <li>Luciene Rafaela Franco dos Santos</li>
+                <li>Samara Mendes de Sousa</li>
+                <li>Victor Celestino Pires</li>
+                <li>Rômulo Ferreira Monteiro</li>
+                <li>Carlos Eduardo Guimarães Moço</li>
+                <li>Tiago Rafael Onzi</li>
+            </ul>
+            <h3 class="text-xl font-semibold text-slate-800 mb-2">Orientadores e Responsáveis:</h3>
+            <p class="text-slate-700 mb-4 text-sm">Prof. Dr. Giovani Firpo Del Duca e Prof. Dr. Jucemar Benedet. Eles assegurarão os preceitos éticos e da proteção aos participantes da pesquisa de acordo com o que preconiza a Resolução 466/12 de 12/06/2012.</p>
+            
+            <h3 class="text-xl font-semibold text-slate-800 mb-2">Contato:</h3>
+            <p class="text-slate-700 mb-4 text-sm">Caso o(a) Sr.(a) tenha alguma dúvida sobre a pesquisa ou precise de alguma assistência em qualquer momento durante este estudo, poderá contatar a equipe de pesquisadores:</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 text-sm">
+                <div>
+                    <h4 class="font-medium text-[var(--elbari-primary)]">Telefones:</h4>
+                    <ul class="list-disc list-inside text-slate-600">
+                        <li>Prof. Giovani: (48) 99988-6944</li>
+                        <li>Prof. Jucemar: (48) 99960-8893</li>
+                        <li>Prof. Edú: (55) 99992-1273</li>
+                        <li>Profa. Luciene: (21) 98867-3409</li>
+                        <li>Profa. Samara: (88) 99408-5988</li>
+                        <li>Prof. Victor: (48) 99926-7802</li>
+                        <li>Prof. Rômulo: (48) 98472-4444</li>
+                        <li>Prof. Carlos: (22) 99819-6477</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-medium text-[var(--elbari-primary)]">E-mails:</h4>
+                    <ul class="list-disc list-inside text-slate-600">
+                        <li>gfdelduca@gmail.com</li>
+                        <li>jucemarb@hotmail.com</li>
+                        <li>edu.f.schopf@gmail.com</li>
+                        <li>franco33@ufrrj.br</li>
+                        <li>samaramendes.185@outlook.com</li>
+                        <li>victorzimba27@gmail.com</li>
+                        <li>nutriromulomonteiro@gmail.com</li>
+                        <li>cguimaraesmoco@gmail.com</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+      </section>
+
+    </main>
+
+    <footer class="bg-slate-800 text-white">
+        <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 text-center">
+            <p class="text-sm text-slate-400">Projeto ELBARI</p>
+            <p class="text-xs text-slate-500 mt-1">Orientadores: Prof. Dr. Giovani Firpo Del Duca e Prof. Dr. Jucemar Benedet.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const sections = document.querySelectorAll('section');
+            const navLinks = document.querySelectorAll('.nav-link');
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+            
+            mobileMenu.addEventListener('click', (event) => {
+                if (event.target.tagName === 'A') {
+                    mobileMenu.classList.add('hidden');
+                }
+            });
+
+            window.addEventListener('scroll', () => {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    if (pageYOffset >= sectionTop - 80) { 
+                        current = section.getAttribute('id');
+                    }
+                });
+                
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    const href = link.getAttribute('href');
+                    if (href && href.includes(current)) {
+                        link.classList.add('active');
+                    }
+                });
+            });
+
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabPanels = document.querySelectorAll('.tab-content-panel');
+
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const targetTab = button.dataset.tab;
+
+                    // remove estados ativos anteriores (antigo indigo)
+                    tabButtons.forEach(btn => {
+                        btn.classList.remove('active', 'bg-[\\#007e9c]', 'text-white');
+                        btn.classList.add('bg-white', 'text-[\\#007e9c]');
+                    });
+                    // aplicar ativo com a cor da logo
+                    button.classList.add('active', 'bg-[\\#007e9c]', 'text-white');
+                    button.classList.remove('bg-white', 'text-[\\#007e9c]');
+                    
+                    tabPanels.forEach(panel => {
+                        if (panel.id === `tab-content-${targetTab}`) {
+                            panel.classList.remove('hidden');
+                        } else {
+                            panel.classList.add('hidden');
+                        }
+                    });
+                });
+            });
+
+            const accordionButtons = document.querySelectorAll('.accordion-button');
+            accordionButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const currentlyOpen = document.querySelector('.accordion-button.open');
+                    if (currentlyOpen && currentlyOpen !== button) {
+                        currentlyOpen.classList.remove('open');
+                        currentlyOpen.querySelector('span').style.transform = 'rotate(0deg)';
+                    }
+                    
+                    button.classList.toggle('open');
+                    const icon = button.querySelector('span');
+                    if (button.classList.contains('open')) {
+                        icon.style.transform = 'rotate(180deg)';
+                    } else {
+                        icon.style.transform = 'rotate(0deg)';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
